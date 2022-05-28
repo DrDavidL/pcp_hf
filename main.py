@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from numpy import log as ln
+from numpy import log as ln, mean
 
 st.title("PCP HF Risk Calculator")
 st.write('*10-Year Heart Failure Risk Calculator from Pooled Cohort Analysis (PCP-HF)*')
@@ -63,18 +63,61 @@ features = {1: ln(age), 2: ln(age)**2, 3: ln(sbp), 4: ln(age)*ln(sbp), 5: ln(sbp
             12: ln(hdl), 13: ln(bmi), 14: ln(age)*ln(bmi), 15: ln(qrs) }
 
 
-wm_coeff = {1: 41.94101, 2: -0.88115, 3: 1.030508, 4: 0, 5: 0.91252, 6: 0, 7: 0.73839, 8: 0, 9: 0.90072, 
-            10: 0.77805, 11: 0.49323, 12: -0.43683, 13: 37.21577, 14: -8.83278, 15: 0.63224}
+coeff = {1: (41.94101, 20.54973, 2.88334, 51.75667), 2: (-0.88115, 0, 0, 0), 3: (1.030508, 12.94937, 2.31106, 28.97791), 4: (0, -2.96923, 0, -6.59777),
+ 5: (0.91252, 11.86273,  2.17229, 28.1853), 6: (0, -2.72538, 0, -6.42425), 7: (0.73839, 11.01752, 1.65337, 0.76532),  8: (0, -2.50777, -0.24665, 0),
+ 9: (0.90072, 1.04503, 0.64704, 0.96695), 10: (0.77805, 0.91807, 0.57891, 0.79561), 11: (0.49323, 0, 0, 0.32646), 12: (-0.43683, -0.07455, -0.80691, 0),
+ 13: (37.21577, 1.32948, 1.16289, 21.24763), 14: (-8.83278, 0, 0, -5.00068), 15: (0.63224, 1.06089, 0.72646, 1.27475)}
 
-tally = 0
 
+if ishtn:
+    features[5] = 0
+    features[6] = 0
+else:
+    features[3] = 0
+    features[4] = 0
+
+if isdiabetes:
+    features[10] = 0
+else:
+    features[9] = 0
+
+if sex == 'male' and race == 'white':
+    flex = 0
+elif sex == 'female' and race == 'white':
+    flex = 1
+elif sex == 'male' and race == 'black':
+    flex = 2
+else:
+    flex = 3
+
+sex_race_coeff = {}
+
+templist = []
+for key in coeff:
+    templist = list(coeff[key])
+    sex_race_coeff[key] = templist[flex]
+
+coefxvalue = {}
 for key in features:
-    tally += features[key] * wm_coeff[key]
+    coefxvalue[key] = features[key] * sex_race_coeff[key]
 
-survival = 0.98752
 
-risk = 1 -  survival**(tally -171.59)
+
+
+
+
+sum_coefxvalue = sum(coefxvalue.values())
+
+mean_coefxvalue= sum_coefxvalue / 15
+
+
+st.write('sum of coefxvalue', sum_coefxvalue)
+st.write('mean of coefxvalue', mean_coefxvalue)
+
+survival = (0.98752, 0.99348, 0.98295, 0.9926 )
+
+risk = 1 -  survival[flex]**(sum_coefxvalue - mean_coefxvalue)
 
 riskpct = risk * 100
 
-st.write('The 10 year risk for heart failure is ', round(riskpct, 2), "%")
+st.write('The 10 year risk for heart failure is: ', round(riskpct, 2), "%.")
