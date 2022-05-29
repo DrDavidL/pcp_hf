@@ -170,6 +170,11 @@ with col3:
         st.write("With diabetes")
     else:
         st.write("Without diabetes")
+
+    if ishtn:
+        st.write("With treated HTN")
+    else:
+        st.write("Without treated HTN")
     
     st.write('BMI is: ' + str(round(bmi,1)))
 
@@ -190,7 +195,7 @@ with col3:
 
     st.latex("S_{0} = survival\;(baseline)") 
 
-    st.latex("IndX = sum\;of\;coefficient\;x\;value)") 
+    st.latex("IndX = sum\;of\;(coefficient\;x\;value)") 
 
     st.latex("MeanCV = Sex\;and\;gender \;specific \;mean \;coefficient \;x \;value") 
 
