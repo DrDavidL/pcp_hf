@@ -202,6 +202,8 @@ with col3:
     st.markdown('*Reference*:')
 
     st.markdown('Khan S, Ning H, Shah S, et al. 10-Year Risk Equations for Incident Heart Failure in the General Population. J Am Coll Cardiol. 2019 May, 73 (19) 2388-2397. https://doi.org/10.1016/j.jacc.2019.02.057')
+
+    st.markdown('Github URL: https://github.com/DrDavidL/pcp_hf')
   
 
 
