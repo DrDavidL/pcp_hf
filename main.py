@@ -40,11 +40,11 @@ with col1:
     #      st.write('Diabetes is recorded!')
 
     sex = st.radio(
-        "Please select a sex. (Note - limited to the options available in the published algorithm) ",
+        "Please select a sex. (Note - limited to the options available in the published algorithm.) ",
         ('female', 'male'))
 
     race = st.radio(
-        "Please select a race  (Note - limited to the options available in the published algorithm) ",
+        "Please select a race. (Note - limited to the options available in the published algorithm.) ",
         ('black', 'white'))
 
 
@@ -197,7 +197,7 @@ with col3:
 
     st.latex("IndX = sum\;of\;(coefficient\;x\;value)") 
 
-    st.latex("MeanCV = Sex\;and\;gender \;specific \;mean \;coefficient \;x \;value") 
+    st.latex("MeanCV = Sex\;and\;race \;specific \;mean \;coefficient \;x \;value") 
 
     st.markdown('*Reference*:')
 
