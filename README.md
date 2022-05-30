@@ -1,6 +1,8 @@
 # pcp_hf
 Experimenting with the PCP_HF tool for heart failure prediction.
 
+*** Not to be used for clinical care *** Demonstrates principles involved. Feel free to edit and modity and apply at user risk.
+
 The tool predicts the likelihood of heart failure developing within the next 10 years. Note - the sex and race requirements and limited options available for the algorithm were set by data available in the paper below. Streamlit is used to enable web access to the python output. See streamlit documentation here: https://docs.streamlit.io/
 
 
