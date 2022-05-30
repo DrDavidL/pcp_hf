@@ -12,3 +12,4 @@ Khan S, Ning H, Shah S, et al. 10-Year Risk Equations for Incident Heart Failure
 
 
 
+<img width="747" alt="CleanShot 2022-05-29 at 19 17 30@2x" src="https://user-images.githubusercontent.com/92898146/170897437-da92dc2d-0985-4d58-80ef-8cf5696d6cd3.png">
