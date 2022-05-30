@@ -3,8 +3,8 @@ import numpy as np
 from numpy import log as ln, mean
 
 st.title("PCP HF Risk Calculator")
-st.write('*10-Year Heart Failure Risk Calculator from Pooled Cohort Analysis (PCP-HF)*')
-
+st.write('*DRAFT - 10-Year Heart Failure Risk Calculator from Pooled Cohort Analysis (PCP-HF)*')
+st.write('*DRAFT - NOT FOR CLINICAL USE - Not validated across input ranges*')
 # Set page two three columns. First for inputs, 2nd for spacing, and 3rd for outputs and explanation.
 
 col1, col2, col3 = st.columns([2,1,4])
