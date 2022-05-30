@@ -5,6 +5,8 @@ from numpy import log as ln, mean
 st.title("PCP HF Risk Calculator")
 st.write('*10-Year Heart Failure Risk Calculator from Pooled Cohort Analysis (PCP-HF)*')
 
+# Set page two three columns. First for inputs, 2nd for spacing, and 3rd for outputs and explanation.
+
 col1, col2, col3 = st.columns([2,1,4])
 
 with col1:
@@ -19,25 +21,23 @@ with col1:
 
     height = st.slider("Height (inches)", min_value=36, max_value=96, value =65)
 
+    # Standard formula for BMI in pounds/inches. Height/weight are more often known than BMI by a patient.
+
     bmi = 703 * weight / height**2
 
     st.write('The BMI calculates to ', round(bmi,1))
 
-    ishtn = st.checkbox('HTN: Select if treated for hypertension.')
+    # Record whether the patient has HTN, smokes and has DM below. Sets to True. 
 
-    # if ishtn:
-    #      st.write('HTN is recorded!')
+    ishtn = st.checkbox('HTN: Select if treated for hypertension.')
 
 
     issmoker = st.checkbox('Smoking: Select if the patient smokes.')
 
-    # if issmoker:
-    #      st.write('Smoking is recorded!')
 
     isdiabetes = st.checkbox('DM: Select if the patient has diabetes.')
 
-    # if isdiabetes:
-    #      st.write('Diabetes is recorded!')
+    # Set sex and race according to algorithm options available. 
 
     sex = st.radio(
         "Please select a sex. (Note - limited to the options available in the published algorithm.) ",
@@ -47,6 +47,7 @@ with col1:
         "Please select a race. (Note - limited to the options available in the published algorithm.) ",
         ('black', 'white'))
 
+    # Enter other values required by algorithm. Use strealit sliders where possible. 
 
 
     sbp = st.slider("Current systolic blood pressure in mm Hg.", min_value=80, max_value=200, value =120)
@@ -59,10 +60,16 @@ with col1:
 
     qrs = st.slider("QRS duration in msec.", min_value=55, max_value=200, value =100)
 
+    # Calculate the 15 values used in the algorithm. These will then be multiplied by coefficients 
+    # determined by the race and sex.
+
 
     features = {1: ln(age), 2: ln(age)**2, 3: ln(sbp), 4: ln(age)*ln(sbp), 5: ln(sbp), 6: ln(age)*ln(sbp), 
                 7: (issmoker + 0), 8: (issmoker +0)*ln(age), 9: ln(glucose), 10: ln(glucose), 11: ln(tchol),
                 12: ln(hdl), 13: ln(bmi), 14: ln(age)*ln(bmi), 15: ln(qrs) }
+
+    # This is the set of all available coefficients for each of the 15 features used in the algorithm.
+    # Available values for each feature appear in order of WM, WF, BM, BF as appeared in the journal article supplement.  
 
 
     coeff = {1: (41.94101, 20.54973, 2.88334, 51.75667), 2: (-0.88115, 0, 0, 0), 3: (1.030508, 12.94937, 2.31106, 28.97791), 4: (0, -2.96923, 0, -6.59777),
@@ -71,7 +78,8 @@ with col1:
     13: (37.21577, 1.32948, 1.16289, 21.24763), 14: (-8.83278, 0, 0, -5.00068), 15: (0.63224, 1.06089, 0.72646, 1.27475)}
 
     # Set measured values to zero if not applicable, e.g., whether treated HTN or diabetes are present. 
-    # Set new dm or HTN specific features (cond_features) as same as (features) except for HTN or DM values
+    # Then, cond_features will represent features that are condition specific for that patient for the calculation.
+ 
 
     cond_features = features
 
@@ -87,7 +95,8 @@ with col1:
     else:
         cond_features[9] = 0
 
-    # Set the index ("flex" below) for the corresponding sex and race in all lists: WM, WF, BM, BF. 
+    # Set surival to the posted sex and race specific baseline survival values.
+    # Set the index ("flex" below) for the corresponding sex and race of the patient in all lists: WM, WF, BM, BF. 
 
     survival = (0.98752, 0.99348, 0.98295, 0.9926 )
 
@@ -100,7 +109,9 @@ with col1:
     else:
         flex = 3
 
-    # Filter the dictionary of coefficients according to sex and race for the current input.
+    # Establish a new dictionary of coefficients according to sex and race for the current input.
+    # That is, find the appropriate sex/race values from the coeff dictionary and make a new dictionary
+    # entitled sex_race_coeff.
 
     sex_race_coeff = {}
 
@@ -109,51 +120,41 @@ with col1:
         templist = coeff[key]
         sex_race_coeff[key] = templist[flex]
 
-    # Make a key value pair for coefficients x values. 
+    # Make a key value pair for sex/race specific coefficients x disease specific values. The formula requires these products.
 
     coefxvalue = {}
     for key in cond_features:
         coefxvalue[key] = cond_features[key] * sex_race_coeff[key]
 
+    # The algorithm uses a sum of these products. 
+
     sum_coefxvalue = sum(coefxvalue.values())
 
-    mean_coef = sum(sex_race_coeff.values())/15
-
-    mean_coefxvalue = {}
-    for key in cond_features:
-        mean_coefxvalue[key] = cond_features[key] * mean_coef
-
-    mean_cv = sum(mean_coefxvalue.values())
-
-        # Below used for troubleshooting
-
-    # st.write('Condition specific features', cond_features )
-
-    # st.write('Sex and race specific coefficients', sex_race_coeff )
-
+    # The paper provides the following baseline mean product values for the population.
+   
     MeanCV = [171.59, 99.7321, 28.7369, 233.978]
 
-    # Below used for troubleshooting
-
-    # st.write('sum of coefxvalue', sum_coefxvalue)
-    # st.write('mean of coefxvalue', MeanCV[flex])
+    # Note use of the formula variables below. Remember the "flex" value specifics sex and race.
 
     s0 = survival[flex]
 
     IndX = sum_coefxvalue
-
-
 
     risk = 1 -  s0**2.718281828459**(sum_coefxvalue - MeanCV[flex])
 
     riskpct = risk * 100
 
 
+
 with col2:
+
+    # Provide some spacing through use of an empty column.
 
     st.write(' ')
 
 with col3:
+
+    # Provide the risk estimate and some explanations and links!
 
 
     st.markdown('## *The 10 year risk of heart failure for a patient with the parameters selected:*')
